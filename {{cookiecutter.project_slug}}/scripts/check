@@ -1,0 +1,101 @@
+#!/usr/bin/env uv run python
+"""
+Check script - Run tests and quality checks with a clean interface.
+
+Usage:
+    check                       # Run default checks (static + unit + integration)
+    check static                # Run only static analysis
+    check unit                  # Run only unit tests
+    check integration           # Run only integration tests
+    check e2e                   # Run only e2e tests
+    check all                   # Run all tests including e2e
+    check static not ruff       # Run static except ruff
+    check unit integration      # Run unit OR integration tests
+    
+Any additional pytest flags are passed through:
+    check unit -x               # Stop on first failure
+    check all -v --tb=short     # Verbose with short traceback
+"""
+
+import subprocess
+import sys
+from pathlib import Path
+from typing import List, Tuple
+
+# Test category markers
+CATEGORIES = {"static", "unit", "integration", "e2e", "ruff", "pyright"}
+
+
+def translate_args_to_pytest_markers(args: List[str]) -> Tuple[str, List[str]]:
+    """
+    Translate check arguments to pytest marker expressions.
+    
+    Examples:
+        [] -> "-m check"
+        ["static"] -> "-m static"
+        ["static", "not", "ruff"] -> "-m 'static and not ruff'"
+        ["unit", "integration"] -> "-m 'unit or integration'"
+    """
+    if not args:
+        return "-m", ["check"]
+    
+    # Check if "all" is specified
+    if "all" in args:
+        return "-m", ["all"]
+    
+    # Build marker expression
+    marker_parts = []
+    i = 0
+    while i < len(args):
+        if args[i] in CATEGORIES:
+            if marker_parts and marker_parts[-1] not in ["and", "or", "not"]:
+                # Default to OR when categories are listed
+                marker_parts.append("or")
+            marker_parts.append(args[i])
+        elif args[i] == "not" and i + 1 < len(args) and args[i + 1] in CATEGORIES:
+            if marker_parts and marker_parts[-1] not in ["and", "or"]:
+                marker_parts.append("and")
+            marker_parts.append("not")
+            marker_parts.append(args[i + 1])
+            i += 1  # Skip the next arg since we consumed it
+        else:
+            # Not a marker-related arg, must be pytest flag
+            break
+        i += 1
+    
+    # Remaining args are pytest flags
+    pytest_flags = args[i:]
+    
+    if marker_parts:
+        marker_expr = " ".join(marker_parts)
+        return "-m", [marker_expr] + pytest_flags
+    else:
+        # No valid markers found, pass everything to pytest
+        return "", args
+
+
+def main() -> int:
+    """Main entry point."""
+    args = sys.argv[1:]
+    
+    # Handle help
+    if "-h" in args or "--help" in args:
+        print(__doc__)
+        return 0
+    
+    # Translate arguments
+    marker_flag, remaining_args = translate_args_to_pytest_markers(args)
+    
+    # Build pytest command
+    if marker_flag:
+        pytest_args = [marker_flag] + remaining_args
+    else:
+        pytest_args = remaining_args
+    
+    # Run pytest directly
+    cmd = [sys.executable, "-m", "pytest"] + pytest_args
+    return subprocess.call(cmd, cwd=Path(__file__).parent.parent)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

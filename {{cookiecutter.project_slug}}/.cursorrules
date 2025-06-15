@@ -1,0 +1,104 @@
+# Cursor IDE Configuration for {{cookiecutter.project_name}} Project
+
+## 🚨 CRITICAL REQUIREMENT
+
+**Before submitting ANY pull request, you MUST complete every item in `PR_CHECKLIST.md`. This is mandatory and non-negotiable.**
+
+## Role Definition
+You are a **Python expert**, a highly experienced **software engineer**, and a **talented developer**. You possess exceptional coding skills and deep understanding of Python's best practices, design patterns, and idioms.
+
+## Technology Stack
+- **Python {{cookiecutter.python_version}}+**: Primary language for this project
+- **uv**: Modern Python package installer and resolver for dependency management
+- **pytest**: Testing framework with three-tier architecture (unit/integration/e2e)
+- **ruff**: Fast Python linter and formatter with comprehensive rule sets
+- **pyright**: Type checker for static analysis and type safety
+
+## Project Structure
+```
+{{cookiecutter.project_slug}}/
+├── src/{{cookiecutter.project_slug}}/              # Main package
+│   ├── __init__.py         # Package initialization
+│   ├── __main__.py         # CLI entry point
+│   ├── config.py           # Configuration classes and settings
+│   ├── exceptions.py       # Custom exception hierarchy
+│   └── services.py         # Core business logic and services
+├── tests/                  # Test suite with three-tier architecture
+│   ├── unit/              # Unit tests (<100ms each, isolated)
+│   ├── integration/       # Integration tests (<500ms each, real filesystem)
+│   ├── e2e/               # End-to-end tests (<30s each, full workflows)
+│   └── static/            # Static analysis tests (ruff, pyright)
+└── scripts/               # Development tools
+    └── check              # Quality gate script
+```
+
+## Comprehensive Coding Guidelines
+
+**For complete coding standards, design principles, testing philosophy, and development workflow, see [AGENTS.md](AGENTS.md).**
+
+Key principles from AGENTS.md:
+- **YAGNI**: Build only what's needed for current features
+- **DRY**: Search for existing functionality before implementing new code  
+- **Type Safety**: Use pyright strict mode, avoid `Any`, minimize `None` returns
+- **Testing**: Three-tier architecture, test business logic only, leverage strict typing
+- **Configuration**: Use immutable dataclasses with dependency injection
+- **Exceptions**: Domain-specific exceptions with narrow catching
+- **Dependencies**: Get approval before adding libraries
+- **Significant Changes**: Use TODO.md planning process with user approval
+
+## Quick Reference
+
+### Development Commands
+```bash
+# Quality checks
+scripts/check              # Standard workflow (unit + integration + static)
+scripts/check unit         # Unit tests only
+scripts/check static       # Static analysis only
+scripts/check all          # Everything including e2e tests
+
+# Manual tools
+uv run pyright            # Type checking
+uv run ruff format .       # Code formatting  
+uv run ruff check .        # Linting
+uv sync --dev              # Install dependencies
+```
+
+### Git Workflow
+```bash
+# Branch naming
+git checkout -b feature/description
+git checkout -b fix/description
+
+# Commit format
+feat(scope): description   # New features
+fix(scope): description    # Bug fixes
+docs(scope): description   # Documentation
+test(scope): description   # Tests
+```
+
+### Quality Requirements
+- **Type annotations everywhere** - comprehensive typing required
+- **Google-style docstrings** - all public APIs must have documentation
+- **Test intention comments** - every test explains what it's testing
+- **Pass `scripts/check`** - all quality gates must pass before committing
+- **MANDATORY: Complete PR_CHECKLIST.md** - MUST complete every item in the checklist before submitting any PR
+
+## Code Requirements
+- **Type annotations**: All functions must include comprehensive type hints
+- **Docstrings**: Google-style docstrings for all public APIs with examples
+- **Comments**: Clear test intention comments for all tests
+- **Error handling**: Domain-specific exceptions with context
+- **Testing**: Comprehensive test coverage with three-tier architecture
+- **Formatting**: Follow ruff formatting and linting rules
+
+## Maintenance Guidelines
+- **Holistic approach**: When fixing issues, look for similar problems elsewhere
+- **Focused changes**: Keep changes scoped to the specific feature or fix
+- **Documentation sync**: Keep all documentation files aligned when updating guidelines
+- **Quality first**: All code must pass `scripts/check` before submission
+- **MANDATORY PR checklist**: Complete every item in PR_CHECKLIST.md before submitting any PR
+- **Review process**: Address all PR comments before considering task complete
+
+---
+
+**For detailed guidance on design principles, testing philosophy, configuration patterns, exception handling, and architecture patterns, refer to [AGENTS.md](AGENTS.md).**
