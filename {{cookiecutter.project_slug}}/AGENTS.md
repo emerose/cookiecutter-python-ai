@@ -2,21 +2,120 @@
 
 This repository welcomes contributions from AI-based tools. When acting as an agent, follow these comprehensive guidelines.
 
-## 🚨 CRITICAL REQUIREMENT
+## 🎯 Quick Reference for AI Agents
 
-**Before submitting ANY pull request, you MUST complete every item in `PR_CHECKLIST.md`. This is mandatory and non-negotiable. No exceptions.**
+### Before Writing Any Code
+1. **Search existing codebase first**: `grep -r "function_name" src/`
+2. **Check common utilities**: config.py, services.py, exceptions.py
+3. **Propose libraries if needed**: Use Library Proposal Template below
 
-## Core Standards
+### Before Opening PR
+1. **Complete PR_CHECKLIST.md entirely** - every single item
+2. **Run `scripts/check`** - must pass completely
+3. **Write test intention comments** - explain what each test validates
+4. **Update documentation** for public API changes
 
-1. **MANDATORY: Complete `PR_CHECKLIST.md`** - You MUST complete every single item in the checklist before submitting any PR. This is not optional.
-2. **Run `scripts/check`** after making changes - all quality gates must pass.
-3. **Keep commits atomic** and use the conventional commit format specified below.
-4. **Do not introduce external dependencies** without approval - always propose library options first.
-5. **Write tests for your changes** whenever feasible, especially for bug or regression fixes.
-6. **Update documentation** before completing a task.
-7. **Never commit secrets or generated files.**
-8. **Use `uv run`** to ensure the project's virtual environment is active when running scripts or commands.
-9. **Use `-v --tb=short`** with `scripts/check` to see detailed logs when debugging failing checks.
+### Code Quality Checklist
+- [ ] Type annotations on all functions and methods
+- [ ] Google-style docstrings on public APIs
+- [ ] Tests focus on business logic, not type validation
+- [ ] Configuration uses frozen dataclasses
+- [ ] Search completed before implementing new functionality
+
+### Common Commands
+```bash
+# Quality checks
+scripts/check                    # Standard workflow (required before PR)
+scripts/check unit              # Quick feedback during development
+scripts/check static            # Type checking and linting only
+
+# Code formatting
+uv run ruff format .            # Format code
+uv run ruff check .             # Lint code
+uv run pyright                  # Type check
+```
+
+## 🚨 CRITICAL REQUIREMENTS (MUST DO)
+
+These are non-negotiable requirements. Failure to follow these will result in PR rejection:
+
+1. **Complete `PR_CHECKLIST.md`** - Every single item must be checked before submitting any PR
+2. **Run `scripts/check`** - All quality gates must pass completely 
+3. **Search existing code first** - Use `grep -r` to find similar functionality before implementing
+4. **Get approval for dependencies** - Propose library options before adding any external dependencies
+5. **Use conventional commits** - Follow the format: `type(scope): description`
+6. **Never commit secrets** - No API keys, passwords, or generated files
+
+## 📋 STANDARD PRACTICES (SHOULD DO)
+
+Follow these practices for high-quality contributions:
+
+1. **Write tests for changes** - Especially for bug fixes and new features
+2. **Update documentation** - Keep docs current with code changes
+3. **Use type annotations** - Annotate all functions, methods, and variables
+4. **Use `uv run`** - Ensure virtual environment is active for all commands
+5. **Add intention comments to tests** - Explain what behavior each test validates
+6. **Use Google-style docstrings** - Document all public APIs
+7. **Prefer frozen dataclasses** - For configuration and data structures
+
+## 🔀 Decision Trees for Common Workflows
+
+### Should I Add a New Dependency?
+
+```
+1. Is this core business logic for the {{cookiecutter.project_slug}} project?
+   YES → Implement custom code
+   NO  → Continue to step 2
+
+2. Can this be implemented in <10 lines of simple code?
+   YES → Implement custom code
+   NO  → Continue to step 3
+
+3. Does existing functionality in the codebase solve this?
+   YES → Use/extend existing code
+   NO  → Continue to step 4
+
+4. Research libraries and create proposal
+   → Use Library Proposal Template (see below)
+   → Get approval before proceeding
+```
+
+### Should I Create New Code or Use Existing?
+
+```
+1. Search the codebase first:
+   grep -r "function_name" src/
+   grep -r "similar_pattern" src/
+   
+2. Found similar functionality?
+   YES → Extend/refactor existing code
+   NO  → Continue to step 3
+
+3. Found partial solutions?
+   YES → Compose existing functions
+   NO  → Create new code following patterns
+
+4. Always check these common locations:
+   - src/{{cookiecutter.project_slug}}/config.py (configuration utilities)
+   - src/{{cookiecutter.project_slug}}/services.py (service patterns)
+   - src/{{cookiecutter.project_slug}}/exceptions.py (error types)
+```
+
+### What Should I Test?
+
+```
+✅ Test These:
+- Business logic and algorithms
+- Error handling and edge cases  
+- Integration between components
+- Configuration behavior changes
+
+❌ Don't Test These:
+- Type validation (pyright handles this)
+- Framework code (pytest, dataclasses)
+- Third-party library behavior
+- Simple getters/setters
+```
 
 ## Project Overview
 
@@ -103,50 +202,91 @@ This keeps the codebase small and prevents unnecessary duplication.
 4. **Get explicit approval** before adding any dependencies
 5. **Only implement custom code** if no suitable library exists
 
-**Library Proposal Template:**
+**Library Proposal Process:**
 
-```
-## Library Proposal: [Feature/Functionality]
+1. Research 2-3 library options
+2. Use Library Proposal Template (see Appendix A4)
+3. Include pros/cons, maintenance status, license
+4. Get approval before proceeding
 
-**Problem**: [What you're trying to solve]
-
-**Options Considered**:
-
-### Option 1: [Library Name]
-- **Pros**: [Benefits, features, community size]
-- **Cons**: [Limitations, size, dependencies]
-- **Maintenance**: [Last update, stars, contributors]
-- **License**: [License type]
-
-### Option 2: [Library Name]
-- **Pros**: [Benefits, features, community size]
-- **Cons**: [Limitations, size, dependencies]
-- **Maintenance**: [Last update, stars, contributors]
-- **License**: [License type]
-
-### Option 3: Custom Implementation
-- **Pros**: [No dependencies, exact fit, control]
-- **Cons**: [Maintenance burden, testing, edge cases]
-
-**Recommendation**: [Your choice with reasoning]
-**Impact**: [Size, performance, maintenance implications]
-```
-
-**Use libraries for:**
-
-- HTTP requests, data validation, file parsing, date/time handling
-- CLI frameworks, async utilities, cryptography
-- Any complex functionality with many edge cases
-- Standard formats (JSON, XML, CSV, etc.)
-
-**Write custom code for:**
-
-- Core business logic specific to {{cookiecutter.project_slug}}'s domain
-- Simple utilities (1-3 lines of code)
-- Integration/glue code between libraries
-- Performance-critical paths needing optimization
+**Use libraries for:** HTTP requests, data validation, file parsing, cryptography, standard formats
+**Write custom code for:** Core business logic, simple utilities (<10 lines), domain-specific integration
 
 **NEVER add dependencies without approval** - always propose first.
+
+### No Legacy or Backward Compatible Code Without Approval
+
+**Don't leave "legacy" or "backward compatible" methods in the code unless explicitly asked to do so.** All code and tests should use the new interfaces and APIs before a refactor is considered complete.
+
+#### What Constitutes Legacy Code
+
+Remove all of the following unless explicitly approved:
+- Old method names kept for compatibility
+- Deprecated parameters or function signatures
+- Old import paths or module aliases
+- Wrapper functions that just call new implementations
+- Any code marked as "deprecated" or "for backward compatibility"
+
+#### Definition of a Complete Refactor
+
+A refactor is **only complete** when:
+1. ✅ All internal code uses the new APIs/interfaces
+2. ✅ All tests are updated to test the new implementation
+3. ✅ All documentation reflects the new approach
+4. ✅ No references to old methods remain (except in migration docs if approved)
+
+#### Examples
+
+*See Appendix A1 for detailed code examples*
+
+#### Refactoring Checklist
+
+When refactoring, ensure:
+- [ ] All calling code updated to use new API
+- [ ] All tests updated to test new API (not through legacy wrappers)
+- [ ] All imports updated to new paths
+- [ ] All documentation updated
+- [ ] All examples in docstrings updated
+- [ ] No "deprecated" markers remain
+- [ ] No compatibility shims remain
+
+#### When Exceptions May Be Granted
+
+**Exceptions require explicit user approval.** Valid reasons might include:
+- Public APIs with external consumers who need migration time
+- Complex system-wide changes requiring phased rollout
+- Critical production systems needing gradual migration
+
+#### Requesting an Exception
+
+If you believe legacy code must be kept, request approval:
+
+```
+I need to keep a legacy method during this refactor:
+
+Current situation:
+- Refactoring `OldClassName.old_method()` to `NewClassName.new_method()`
+- Found 47 call sites across 12 modules
+- 3 of these are in critical production workflows
+
+Why legacy code might be needed:
+- The production workflows run every hour and need careful testing
+- Full migration would require coordinated deployment across 3 services
+- Gradual migration would reduce risk
+
+Proposed approach:
+- Keep old method with deprecation warning for 1 sprint
+- Add TODO comment with removal date
+- Create tracking issue for complete removal
+
+May I keep the legacy method with clear deprecation marking?
+```
+
+#### Important Notes
+
+- **Default is removal**: Always remove legacy code unless told otherwise
+- **Update everything**: A partial refactor is not a complete refactor
+- **No silent compatibility**: If approved to keep legacy code, it must have clear deprecation warnings
 
 ## Git Commit Standards
 
@@ -315,6 +455,171 @@ def get_first(items):  # No return type, unclear None behavior
     return items[0] if items else None
 ```
 
+### Never Ignore Lint or Typing Errors Without Explicit Approval
+
+**CRITICAL**: Agents must NEVER suppress lint or typing errors without explicit user approval. This includes:
+- `# type: ignore` comments
+- `# pyright: ignore` comments  
+- `# noqa` comments for ruff
+- Disabling rules in pyproject.toml
+- Any other form of error suppression
+
+#### Approval Process
+
+When encountering an error that seems impossible to fix, agents must:
+
+1. **Show the problematic code with context**:
+   ```python
+   # Show 5-10 lines of surrounding code
+   def process_third_party_data(client: SomeClient) -> ProcessedData:
+       # This line has a type error:
+       result = client.get_data()  # pyright: Unknown return type
+       return ProcessedData(result)
+   ```
+
+2. **Explain why the ignore is necessary**:
+   - "The third-party library 'some-client' doesn't provide type stubs"
+   - "Pyright false positive due to complex generic inference"
+   - "Temporary workaround for upstream bug (link to issue)"
+
+3. **Document alternative approaches considered**:
+   - "Tried creating a Protocol but the API is too dynamic"
+   - "Attempted runtime type checking but performance impact too high"
+   - "Considered switching libraries but no alternatives exist"
+
+4. **Wait for explicit approval** before adding any ignore directive
+
+#### Exceptional Circumstances Where Approval May Be Granted
+
+- **Third-party library limitations**: Library lacks type annotations and creating comprehensive stubs is impractical
+- **Known tool false positives**: Documented pyright/ruff bugs with open issues
+- **Temporary workarounds**: Time-sensitive fixes with clear tracking issues for proper resolution
+- **Framework quirks**: Well-known patterns in frameworks like Django/FastAPI that confuse type checkers
+
+#### Example Request for Approval
+
+```
+I need to add a type ignore for this third-party API call:
+
+```python
+from untrusted_analytics import Analyzer  # No type stubs available
+
+class DataProcessor:
+    def analyze(self, data: dict[str, Any]) -> AnalysisResult:
+        analyzer = Analyzer()
+        # Type error: Unknown return type, no stubs for this library
+        raw_result = analyzer.process(data)  # <- Need to ignore this
+        
+        # Our typed wrapper
+        return AnalysisResult(
+            score=float(raw_result['score']),
+            categories=list(raw_result['categories'])
+        )
+```
+
+Why ignore is necessary:
+- The 'untrusted_analytics' package has no type annotations or stubs
+- Creating full stubs would require reverse-engineering their entire API
+- We only use this one method, so a targeted ignore is more practical
+
+Alternatives considered:
+- Searched for typed alternatives - none exist for our use case
+- Tried creating a minimal Protocol - their API uses dynamic attributes
+- Considered runtime validation - already doing that with our wrapper
+
+May I add `# type: ignore[no-any-return]` to line 6?
+```
+
+#### Important Notes
+
+- **Existing ignores**: Leave existing `# type: ignore` comments untouched unless specifically asked to address them
+- **PR readiness**: Never submit code with unapproved ignore directives
+- **Documentation**: When approval is granted, add a comment explaining why the ignore was necessary
+
+### Wrapping Untyped Third-Party Libraries
+
+When adding third-party libraries that lack type annotations, **always create type-safe wrappers** to insulate first-party code from untyped interfaces.
+
+#### Approach Priority
+
+1. **Prefer Pydantic models** for data structures returned by third-party libraries
+2. **Use typed wrapper classes** when Pydantic models aren't suitable (e.g., for stateful objects or complex APIs)
+3. **Never expose untyped interfaces** directly to the rest of the codebase
+
+#### Implementation Pattern
+
+```python
+# ❌ Bad - Exposing untyped library directly
+from some_untyped_lib import Client  # No type annotations
+
+def get_user_data(user_id: str) -> Any:  # Forced to use Any
+    client = Client()
+    return client.fetch_user(user_id)  # Unknown return type
+
+# ✅ Good - Wrapped with Pydantic models
+from pydantic import BaseModel
+from some_untyped_lib import Client  # No type annotations
+
+class UserData(BaseModel):
+    """Type-safe representation of user data from external API."""
+    id: str
+    name: str
+    email: str
+    created_at: datetime
+    metadata: dict[str, Any]  # Even nested data gets some typing
+
+class TypedClient:
+    """Type-safe wrapper around untyped client library."""
+    
+    def __init__(self) -> None:
+        self._client = Client()  # Hide untyped client as private
+    
+    def fetch_user(self, user_id: str) -> UserData:
+        """Fetch user data with full type safety."""
+        raw_data = self._client.fetch_user(user_id)
+        return UserData.model_validate(raw_data)  # Validates and types
+
+# Now the rest of the codebase has type safety
+def get_user_data(user_id: str) -> UserData:
+    client = TypedClient()
+    return client.fetch_user(user_id)  # Fully typed!
+```
+
+#### Benefits of This Approach
+
+- **Type safety throughout the codebase** - No `Any` types leak beyond the wrapper
+- **Runtime validation** - Pydantic validates data structure at runtime
+- **Clear interface boundaries** - Easy to see what external data looks like
+- **Easier testing** - Can mock typed interfaces more easily
+- **Documentation** - Pydantic models serve as clear documentation
+
+#### When to Use Wrapper Classes
+
+Use typed wrapper classes instead of (or in addition to) Pydantic models when:
+
+```python
+# For stateful objects or complex APIs
+class TypedDatabaseConnection:
+    """Type-safe wrapper around untyped database library."""
+    
+    def __init__(self, connection_string: str) -> None:
+        self._conn = untypeddb.connect(connection_string)
+    
+    def query(self, sql: str, params: list[Any]) -> list[dict[str, Any]]:
+        """Execute query with typed return value."""
+        return self._conn.execute(sql, params).fetchall()
+    
+    def transaction(self) -> ContextManager[None]:
+        """Typed context manager for transactions."""
+        return self._conn.transaction()
+```
+
+#### Important Notes
+
+- **Existing code**: Leave existing untyped library usage alone unless specifically asked to refactor
+- **Minimal wrapping**: Only wrap the parts of the library you actually use
+- **Type specificity**: Be as specific as possible with types, avoid `Any` where you can
+
 ### Documentation Requirements
 
 **ALWAYS provide comprehensive documentation:**
@@ -360,44 +665,44 @@ def get_first(items):  # No return type, unclear None behavior
 
 3. **Usage examples in docstrings** for complex functions
 
-### Testing Requirements
+### 🧪 Comprehensive Testing Guide
 
-**ALWAYS follow the three-tier testing architecture:**
+**CRITICAL: All tests must pass before opening any PR. No exceptions.**
 
-#### General Rules
+#### Three-Tier Testing Architecture
 
-- **Test only business logic, not implementation details**
-- **Don't test what type checking already covers** (rely on strict typing)
-- **Never test third-party code** – only test your business logic
-- **Fewer meaningful tests > many duplicative tests**
-- **Behavior-driven tests are preferred**: focus on observable outcomes, not mechanics.
+1. **Unit Tests** (`tests/unit/`) - <100ms each
+   - Business logic in complete isolation
+   - No filesystem, network, or external dependencies
+   - Use dependency injection with config objects
 
-1. **Unit Tests** (`tests/unit/`):
+2. **Integration Tests** (`tests/integration/`) - <500ms each  
+   - Component workflows with real filesystem
+   - Mock external APIs only
+   - Test integration points between components
 
-   - Use dependency injection with configuration objects
-   - Test business logic in isolation (<100ms per test)
-   - No external dependencies, filesystem, or network calls
-   - Include test intention comments
+3. **E2E Tests** (`tests/e2e/`) - <30s each
+   - Full application scenarios
+   - Mock external services for cost control
+   - Test complete user workflows
 
-2. **Integration Tests** (`tests/integration/`):
+#### What to Test vs. What NOT to Test
 
-   - Test component workflows with real filesystem + mocked external APIs
-   - Total execution time <500ms per test
-   - Test integration points, not individual components
-   - Include test intention comments explaining the integration being tested
+```
+✅ DO Test:
+- Business logic and algorithms
+- Error handling and edge cases
+- Component integration behavior
+- Configuration effects on behavior
 
-3. **E2E Tests** (`tests/e2e/`):
-   - Real application scenarios with subprocess calls
-   - Mock external services for cost control and deterministic results
-   - Include test intention comments explaining the end-to-end scenario
+❌ DON'T Test:
+- Type validation (pyright handles this)
+- Framework behavior (pytest, dataclasses)  
+- Third-party library functionality
+- Simple getters/setters or property access
+```
 
-### Test Naming and Structure
-
-- Use descriptive test names in `snake_case`, describing the scenario and expectation.
-- Each test should start with a docstring stating the **business behavior** it verifies.
-- Prefer `Given/When/Then` structure in comments to guide test readability.
-
-Example:
+#### Required Test Structure
 
 ```python
 def test_service_handles_empty_input():
@@ -405,84 +710,41 @@ def test_service_handles_empty_input():
     # Given: A configured service
     config = {{cookiecutter.project_class_name}}Config(debug=True)
     service = MyService(config)
-
+    
     # When: Processing empty input
     result = service.process([])
-
+    
     # Then: Returns empty list without error
     assert result == []
 ```
 
-### Testing Philosophy
+#### Test Execution Workflow
 
-**Core Testing Principles:**
-
-1. **Leverage Strict Typing** - Don't test what pyright already validates:
-
-   - ❌ Don't test that functions accept correct parameter types
-   - ❌ Don't test that functions return declared types
-   - ❌ Don't test basic type validation that pyright catches
-   - ✅ Do test business logic and behavior
-
-2. **Test Business Logic, Not Implementation:**
-
-   - ❌ Don't test internal method calls or implementation details
-   - ❌ Don't test framework code, library code, or language features
-   - ❌ Don't test getters/setters or simple property access
-   - ✅ Do test algorithms, business rules, and domain logic
-
-3. **Never Test Third-Party Code:**
-
-   - ❌ Don't test that libraries work as documented
-   - ❌ Don't test framework behavior (e.g., pytest, dataclasses)
-   - ❌ Don't test standard library functions
-   - ✅ Do test your code's interaction with libraries (integration tests)
-
-4. **Quality Over Quantity:**
-   - ❌ Avoid tests that duplicate type checking or obvious behavior
-   - ❌ Avoid tests that just exercise code without asserting meaningful outcomes
-   - ✅ Write fewer, focused tests that validate important business behavior
-   - ✅ Each test should reflect a real-world expectation and fail only when behavior is incorrect
-
-**Example of what NOT to test:**
-
-```python
-# ❌ Don't test this - type checking already validates it
-def test_config_accepts_string_app_name():
-    config = {{cookiecutter.project_class_name}}Config(app_name="test")  # pyright validates this
-    assert config.app_name == "test"      # trivial assertion
-
-# ❌ Don't test this - tests framework code
-def test_dataclass_frozen():
-    config = {{cookiecutter.project_class_name}}Config()
-    with pytest.raises(AttributeError):
-        config.app_name = "new"  # tests dataclass frozen behavior
-
-# ✅ DO test this - business logic
-def test_config_debug_flag_controls_logging_behavior():
-    """Test that debug flag actually changes application behavior."""
-    config = {{cookiecutter.project_class_name}}Config(debug=True)
-    logger = create_logger(config)
-
-    # Test actual business behavior, not just property access
-    assert logger.level == logging.DEBUG
+**During Development:**
+```bash
+scripts/check unit         # Quick feedback while coding
+scripts/check static       # Check types and linting
+scripts/check              # Standard workflow
 ```
 
-**Prefer fakes over mocks for better, more maintainable tests:**
+**Before PR (MANDATORY):**
+1. Run `scripts/check` - must pass completely
+2. Fix ALL failures - tests, lint, type errors
+3. No temporary skips without approval
+4. Verify CI compatibility
 
-**Note:** Excessive use of mocks leads to fragile tests and hides business logic. Use fakes where possible.
+#### Fakes vs Mocks - Prefer Fakes
 
-**✅ Use fakes and lightweight implementations:**
-
+**✅ Use simple fake implementations:**
 ```python
 class FakeDataStore:
     """Simple in-memory fake for testing."""
     def __init__(self):
         self._data = {}
-
-    def get(self, key: str) -> Optional[str]:
+    
+    def get(self, key: str) -> str | None:
         return self._data.get(key)
-
+    
     def set(self, key: str, value: str) -> None:
         self._data[key] = value
 
@@ -491,35 +753,21 @@ def test_service_behavior():
     # Given: Service with fake dependencies
     fake_store = FakeDataStore()
     service = DataService(fake_store)
-
+    
     # When: Using the service
     service.store_data("key", "value")
     result = service.get_data("key")
-
+    
     # Then: Behavior works as expected
     assert result == "value"
 ```
 
-**❌ Avoid heavy mocking with patches:**
+**❌ Avoid heavy mocking:**
+- Don't use `@patch` decorators - makes tests fragile
+- Don't test method calls - test behavior outcomes
+- Don't mock what you own - use dependency injection
 
-```python
-    # Don't do this - brittle and focused on implementation
-    @patch('service.DataStore')
-    @patch('service.Logger')
-    def test_with_mocks(mock_logger, mock_store):
-        mock_store.get.return_value = "value"
-        service = DataService(mock_store, mock_logger)
-        result = service.get_data("key")
-        # Fragile - tests implementation, not behavior
-        mock_store.get.assert_called_once_with("key")
-```
-
-**Guidelines:**
-
-- **Create simple fake classes** that implement the same interface
-- **Use dependency injection** to enable easy fake substitution
-- **Test behavior, not implementation** – avoid asserting on method calls
-- **Avoid `@patch` decorators** – they make tests fragile and slow
+#### Key Testing Principles
 - **Trust strict typing** – don't test what pyright already validates
 - **Focus on business logic** – don't test framework code or third-party libraries
 - **Quality over quantity** – write fewer, more meaningful tests
@@ -891,48 +1139,11 @@ For **complex, multi-step changes** (simple changes don't need this process), fo
 
 ### 1. Create TODO.md Planning Document
 
-Before implementing any significant change, create a `TODO.md` file in the repository root containing:
+For significant changes, create a `TODO.md` file with:
 
-**Required Sections:**
-- **Title**: Clear name for the current change
-- **Related Issue**: GitHub issue name and number (if any)
-- **Goal**: Concise description of what you're trying to achieve
-- **High-Level Plan**: Overall approach to accomplish the goal
-- **Public API Changes**: Summary of intended API modifications
-- **Testing Plan**: Strategy to ensure the change works correctly
-- **Implementation Steps**: Detailed, checkable steps to complete the work
+**Required Sections:** Title, Goal, High-Level Plan, API Changes, Testing Plan, Implementation Steps
 
-**Template:**
-```markdown
-# [Change Title]
-
-**Related Issue**: #123 - Issue description
-
-## Goal
-Brief description of what this change accomplishes.
-
-## High-Level Plan
-Overall approach and strategy.
-
-## Public API Changes
-- New functions/classes to be added
-- Existing APIs to be modified
-- Breaking changes (if any)
-
-## Testing Plan
-- Unit tests to be added/modified
-- Integration tests needed
-- Manual testing steps
-
-## Implementation Steps
-- [ ] Step 1: Specific task
-- [ ] Step 2: Another specific task
-- [ ] Step 3: Documentation updates
-- [ ] Step 4: Test implementation
-
-## Deviations
-(Added during implementation if needed)
-```
+*See Appendix A4 for complete TODO.md template*
 
 ### 2. Seek User Approval and Check In Plan
 
@@ -1006,3 +1217,220 @@ The project uses GitHub issues for task tracking:
 1. **Link commits to issues**: Include issue numbers in commit messages when relevant
 2. **Reference issues in PRs**: Use "Fixes #123" or "Addresses #456" in PR descriptions
 3. **Update issue status**: Comment on progress and close issues when complete
+
+## Security Guidelines
+
+- **Never use MD5. Always use sha256 instead**
+- **Never commit secrets or keys to the repository**
+- **Never expose or log secrets and keys in code**
+- **Follow security best practices for authentication and data handling**
+
+## Project Management
+
+### Issue Tracking
+- **Use GitHub Issues** for all task tracking
+- **Link PRs to issues** using "Fixes #123" or "Addresses #456"
+- **Update issue status** with progress comments
+
+### Versioning
+- **Semantic Versioning**: Use vX.Y.Z format
+- **Git tags**: Create tags for releases (`v0.1.0`, `v0.2.0`)
+- **No dependencies without approval**: Propose library options first
+
+### CI/CD
+- GitHub Actions runs tests, linting, and type checking
+- Tests run on Python 3.12
+- All checks must pass for PRs
+
+## Detailed Command Examples
+
+### Quality Check Commands
+```bash
+# Install dependencies
+uv sync --dev
+
+# Run standard workflow (unit + integration + static)
+scripts/check
+
+# Run specific test categories
+scripts/check unit         # Unit tests only
+scripts/check static       # Static analysis only
+scripts/check integration  # Integration tests only
+scripts/check e2e          # E2E tests only
+scripts/check all          # Everything including e2e tests
+
+# Run static analysis except specific tools
+scripts/check static not ruff       # Static except ruff
+scripts/check unit integration      # Unit OR integration tests
+
+# Pass pytest flags through
+scripts/check unit -x               # Stop on first failure
+scripts/check all -v --tb=short     # Verbose with short traceback
+
+# Manual tools
+uv run pytest             # Run tests directly
+uv run ruff check .        # Lint code
+uv run ruff format .       # Format code
+uv run pyright            # Type check
+uv run python -m {{cookiecutter.project_slug}}     # Run application
+```
+
+### Configuration Examples
+```python
+from {{cookiecutter.project_slug}}.config import {{cookiecutter.project_class_name}}Config, RuntimeOptions
+
+# Immutable static configuration
+config = {{cookiecutter.project_class_name}}Config.from_env()
+
+# Mutable runtime options  
+runtime = RuntimeOptions(verbose=True, dry_run=False)
+
+# Dependency injection
+class MyService:
+    def __init__(self, config: {{cookiecutter.project_class_name}}Config, runtime: RuntimeOptions):
+        self.config = config
+        self.runtime = runtime
+```
+
+---
+
+# 📚 APPENDIX: Detailed Examples and Reference Material
+
+*This section contains comprehensive examples and detailed guidance for complex scenarios. Refer to these when you need detailed implementation patterns.*
+
+## A1. Comprehensive Code Examples
+
+### Legacy Code Refactoring Examples
+
+```python
+# ❌ Bad - Leaving legacy methods after refactoring
+class DataProcessor:
+    def process_data(self, items: list[str]) -> dict[str, Any]:
+        """New implementation."""
+        return self._process_items_v2(items)
+    
+    def process_items(self, items: list[str]) -> dict[str, Any]:
+        """DEPRECATED: Use process_data instead."""
+        # Don't leave this here!
+        return self.process_data(items)
+    
+    @deprecated("Use process_data")
+    def processItems(self, items):  # Old camelCase name
+        # Don't leave this here either!
+        return self.process_data(items)
+
+# ✅ Good - Clean refactor with no legacy code
+class DataProcessor:
+    def process_data(self, items: list[str]) -> dict[str, Any]:
+        """Process items and return results."""
+        return self._process_items_v2(items)
+    # That's it - no legacy methods!
+```
+
+## A2. Extended Configuration Patterns
+
+### Advanced Configuration Examples
+
+```python
+@dataclass(frozen=True)
+class ServiceConfig:
+    """Configuration for service behavior."""
+    timeout: int = 30
+    retries: int = 3
+    batch_size: int = 100
+    api_key: str = field(repr=False)  # Hide secrets from repr
+    
+    def with_overrides(self, **kwargs) -> "ServiceConfig":
+        """Create new config with overrides."""
+        return replace(self, **kwargs)
+
+# Usage patterns
+config = ServiceConfig.from_env()
+test_config = config.with_overrides(timeout=5, retries=1)
+```
+
+## A3. Advanced Testing Scenarios
+
+### Complex Test Examples
+
+```python
+def test_service_with_multiple_dependencies():
+    """Service integrates correctly with multiple components."""
+    # Given: Complex service setup
+    fake_db = FakeDatabase()
+    fake_cache = FakeCache()
+    config = ServiceConfig(timeout=30)
+    service = ComplexService(fake_db, fake_cache, config)
+    
+    # When: Performing complex operation
+    result = service.process_with_caching("test_data")
+    
+    # Then: All components work together
+    assert result.status == "success"
+    assert fake_cache.was_accessed()
+    assert fake_db.was_queried()
+```
+
+## A4. Complete Project Templates
+
+### Library Proposal Template
+
+```markdown
+## Library Proposal: [Feature/Functionality]
+
+**Problem**: [What you're trying to solve]
+
+**Options Considered**:
+
+### Option 1: [Library Name]
+- **Pros**: [Benefits, features, community size]
+- **Cons**: [Limitations, size, dependencies]
+- **Maintenance**: [Last update, stars, contributors]
+- **License**: [License type]
+
+### Option 2: [Library Name]
+- **Pros**: [Benefits, features, community size]
+- **Cons**: [Limitations, size, dependencies]
+- **Maintenance**: [Last update, stars, contributors]
+- **License**: [License type]
+
+### Option 3: Custom Implementation
+- **Pros**: [No dependencies, exact fit, control]
+- **Cons**: [Maintenance burden, testing, edge cases]
+
+**Recommendation**: [Your choice with reasoning]
+**Impact**: [Size, performance, maintenance implications]
+```
+
+### TODO.md Template
+
+```markdown
+# [Change Title]
+
+**Related Issue**: #123 - Issue description
+
+## Goal
+Brief description of what this change accomplishes.
+
+## High-Level Plan
+Overall approach and strategy.
+
+## Public API Changes
+- New functions/classes to be added
+- Existing APIs to be modified
+- Breaking changes (if any)
+
+## Testing Plan
+- Unit tests to be added/modified
+- Integration tests needed
+- Manual testing steps
+
+## Implementation Steps
+- [ ] Step 1: Specific task
+- [ ] Step 2: Another specific task
+- [ ] Step 3: Documentation updates
+- [ ] Step 4: Test implementation
+
+## Deviations
+(Added during implementation if needed)
+```

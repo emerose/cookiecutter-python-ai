@@ -4,7 +4,9 @@ version = "{{cookiecutter.version}}"
 description = "{{cookiecutter.project_description}}"
 readme = "README.md"
 requires-python = ">={{cookiecutter.python_version}}"
-dependencies = []
+dependencies = [
+    "structlog>=24.1.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -44,6 +46,7 @@ markers = [
     "all: marks tests as part of all test suite",
     "static: marks tests as static analysis",
     "unit: marks tests as unit tests",
+    "computation: marks tests as computational tests (ML/metrics)",
     "integration: marks tests as integration tests",
     "e2e: marks tests as end-to-end tests",
     "ruff: marks tests as ruff checks",
@@ -66,8 +69,16 @@ select = [
     "UP",   # pyupgrade
     "N",    # pep8-naming
     "SIM",  # flake8-simplify
+    "PL",   # pylint
+    "RUF",  # ruff-specific rules
 ]
-ignore = []
+ignore = [
+    "E501",    # line too long (handled by formatter)
+    "PLR2004", # magic value used in comparison
+]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
 
 [tool.ruff.format]
 quote-style = "double"
@@ -91,3 +102,10 @@ reportPropertyTypeMismatch = "error"
 reportUnnecessaryTypeIgnoreComment = "error"
 reportUnusedImport = "error"
 reportUnusedVariable = "error"
+
+# Strict checking for our core code - catch all type issues
+reportUnknownArgumentType = "error"
+reportUnknownMemberType = "error"
+reportUnknownVariableType = "error"
+reportUnknownParameterType = "error"
+reportAttributeAccessIssue = "error"
