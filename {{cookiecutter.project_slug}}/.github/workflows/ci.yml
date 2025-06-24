@@ -24,9 +24,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/uv
-          key: ${{ runner.os }}-uv-${{ hashFiles('**/pyproject.toml') }}
+          key: {% raw %}${{ runner.os }}{% endraw %}-uv-{% raw %}${{ hashFiles('**/pyproject.toml') }}{% endraw %}
           restore-keys: |
-            ${{ runner.os }}-uv-
+            {% raw %}${{ runner.os }}{% endraw %}-uv-
       
       - name: Install dependencies
         run: |
